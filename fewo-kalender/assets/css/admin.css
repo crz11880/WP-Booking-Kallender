@@ -78,6 +78,63 @@
     border-color: #d6b08e;
 }
 
+.fewo-company-card {
+    border-color: #8eb3ff;
+    background: linear-gradient(130deg, #edf4ff 0%, #e9f1ff 42%, #ffffff 100%);
+}
+
+.fewo-company-card h2 {
+    margin-top: 0;
+    margin-bottom: 6px;
+}
+
+.fewo-company-head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 10px;
+}
+
+.fewo-company-logo {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    background: linear-gradient(145deg, #2d5bd1 0%, #1f46ae 100%);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 6px 14px rgba(31, 70, 174, 0.28);
+}
+
+.fewo-company-logo-text {
+    color: #fff;
+    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: 0.03em;
+}
+
+.fewo-company-badge {
+    display: inline-block;
+    border-radius: 999px;
+    background: #dbe8ff;
+    color: #1f46ae;
+    border: 1px solid #bdd3ff;
+    padding: 3px 10px;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.fewo-company-card .button.button-primary {
+    background: #2d5bd1;
+    border-color: #1f46ae;
+    color: #fff;
+}
+
+.fewo-company-card .button.button-primary:hover {
+    background: #1f46ae;
+    border-color: #163788;
+}
+
 .fewo-badge {
     display: inline-block;
     border-radius: 16px;

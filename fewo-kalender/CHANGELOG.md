@@ -1,5 +1,17 @@
 # Changelog
 
+## 1.1.6 - 2026-04-15
+- Firmen-Werbeblock im Backend visuell modernisiert.
+- Logo-Badge, Service-Badge und staerkerer CTA-Button fuer Work Less IT hinzugefuegt.
+
+## 1.1.5 - 2026-04-15
+- Firmen-Werbeblock im Backend hinzugefuegt (Fewo Kalender + Bearbeiten).
+- Link zu Work Less IT integriert: https://work-less.it/
+
+## 1.1.4 - 2026-04-15
+- Buy Me a Coffee Support-Bereich sichtbar im Plugin-Backend eingebaut.
+- Menuepunkt fewo-kalender-edit im Admin ausgeblendet (Bearbeitung bleibt per interner Seite erreichbar).
+
 ## 1.1.3 - 2026-04-15
 - README erweitert und Support-Sektion hinzugefuegt.
 - Buy Me a Coffee Link eingepflegt: https://buymeacoffee.com/worklessit

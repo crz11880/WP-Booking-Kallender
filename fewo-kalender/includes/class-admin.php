@@ -39,7 +39,7 @@ class Fewo_Kalender_Admin
         );
 
         add_submenu_page(
-            $this->menu_slug,
+            null,
             __('Kalender bearbeiten', 'fewo-kalender'),
             __('Kalender bearbeiten', 'fewo-kalender'),
             'manage_options',
@@ -50,7 +50,13 @@ class Fewo_Kalender_Admin
 
     public function enqueue_assets($hook)
     {
-        if ('toplevel_page_' . $this->menu_slug !== $hook && 'fewo-kalender_page_' . $this->edit_slug !== $hook) {
+        $allowed_hooks = array(
+            'toplevel_page_' . $this->menu_slug,
+            'fewo-kalender_page_' . $this->edit_slug,
+            'admin_page_' . $this->edit_slug,
+        );
+
+        if (! in_array($hook, $allowed_hooks, true)) {
             return;
         }
 

@@ -4,7 +4,7 @@ Tags: calendar, booking, vacation rental
 Requires at least: 6.0
 Tested up to: 6.5
 Requires PHP: 7.4
-Stable tag: 1.1.3
+Stable tag: 1.1.6
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -30,6 +30,16 @@ Wenn dir dieses Plugin hilft, kannst du mich hier unterstuetzen:
 https://buymeacoffee.com/worklessit
 
 == Changelog ==
+= 1.1.6 =
+* Firmen-Werbeblock im Backend visuell aufgewertet (Logo-Badge, klarerer CTA, modernes Layout).
+
+= 1.1.5 =
+* Firmen-Werbeflaeche im Backend hinzugefuegt (Work Less IT): https://work-less.it/
+
+= 1.1.4 =
+* Support-Link jetzt sichtbar direkt im Plugin-Backend (Fewo Kalender + Bearbeiten).
+* Der Admin-Menuepunkt fewo-kalender-edit ist nicht mehr sichtbar und nur noch intern aufrufbar.
+
 = 1.1.3 =
 * README/Support-Bereich erweitert.
 * Buy Me a Coffee Link hinzugefuegt: https://buymeacoffee.com/worklessit

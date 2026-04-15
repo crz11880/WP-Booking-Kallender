@@ -110,4 +110,32 @@ $today         = current_time('Y-m-d');
             <?php submit_button(__('Status speichern', 'fewo-kalender')); ?>
         </form>
     </div>
+
+    <div class="fewo-admin-card fewo-support-card">
+        <h2><?php esc_html_e('Support', 'fewo-kalender'); ?></h2>
+        <p><?php esc_html_e('Wenn dir das Plugin hilft, kannst du meine Arbeit hier unterstuetzen:', 'fewo-kalender'); ?></p>
+        <p>
+            <a class="button button-primary" href="https://buymeacoffee.com/worklessit" target="_blank" rel="noopener noreferrer">
+                <?php esc_html_e('Buy Me a Coffee', 'fewo-kalender'); ?>
+            </a>
+        </p>
+    </div>
+
+    <div class="fewo-admin-card fewo-company-card">
+        <div class="fewo-company-head">
+            <div class="fewo-company-logo" aria-hidden="true">
+                <span class="fewo-company-logo-text">WL</span>
+            </div>
+            <div>
+                <h2><?php esc_html_e('Entwickelt von Work Less IT', 'fewo-kalender'); ?></h2>
+                <span class="fewo-company-badge"><?php esc_html_e('WordPress, Automatisierung, KI', 'fewo-kalender'); ?></span>
+            </div>
+        </div>
+        <p><?php esc_html_e('Wir bauen moderne Websites, Plugins und Automationen, die dir Zeit sparen und dein Business effizienter machen.', 'fewo-kalender'); ?></p>
+        <p>
+            <a class="button button-primary" href="https://work-less.it/" target="_blank" rel="noopener noreferrer">
+                <?php esc_html_e('Jetzt Work Less IT besuchen', 'fewo-kalender'); ?>
+            </a>
+        </p>
+    </div>
 </div>
