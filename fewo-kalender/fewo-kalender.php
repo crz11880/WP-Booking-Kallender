@@ -2,8 +2,9 @@
 /**
  * Plugin Name: Fewo Kalender
  * Description: Einfacher Belegungskalender fuer mehrere Ferienwohnungen mit Backend-Verwaltung und Shortcode-Anzeige.
- * Version: 1.1.2
+ * Version: 1.1.3
  * Author: Your Name
+ * Donate link: https://buymeacoffee.com/worklessit
  * Text Domain: fewo-kalender
  * Requires at least: 6.0
  * Requires PHP: 7.4
@@ -13,7 +14,7 @@ if (! defined('ABSPATH')) {
     exit;
 }
 
-define('FEWO_KALENDER_VERSION', '1.1.2');
+define('FEWO_KALENDER_VERSION', '1.1.3');
 define('FEWO_KALENDER_FILE', __FILE__);
 define('FEWO_KALENDER_PATH', plugin_dir_path(__FILE__));
 define('FEWO_KALENDER_URL', plugin_dir_url(__FILE__));

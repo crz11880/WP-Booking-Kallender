@@ -4,7 +4,7 @@ Tags: calendar, booking, vacation rental
 Requires at least: 6.0
 Tested up to: 6.5
 Requires PHP: 7.4
-Stable tag: 1.1.2
+Stable tag: 1.1.3
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -25,7 +25,15 @@ Ein einfaches WordPress-Plugin fuer mehrere Ferienwohnungs-Belegungskalender.
 4. Shortcode verwenden: [fewo_kalender id="1"]
 5. Optionales Design im Shortcode: [fewo_kalender id="1" design="ocean"]
 
+== Support ==
+Wenn dir dieses Plugin hilft, kannst du mich hier unterstuetzen:
+https://buymeacoffee.com/worklessit
+
 == Changelog ==
+= 1.1.3 =
+* README/Support-Bereich erweitert.
+* Buy Me a Coffee Link hinzugefuegt: https://buymeacoffee.com/worklessit
+
 = 1.1.2 =
 * Live-Highlight der Design-Vorschau im Admin beim Wechsel der Design-Auswahl.
 

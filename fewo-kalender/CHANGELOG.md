@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.1.3 - 2026-04-15
+- README erweitert und Support-Sektion hinzugefuegt.
+- Buy Me a Coffee Link eingepflegt: https://buymeacoffee.com/worklessit
+
 ## 1.1.2 - 2026-04-15
 - Live-Highlight fuer Design-Vorschau im Admin umgesetzt.
 - Beim Wechsel im Design-Select wird die passende Vorschauchip automatisch hervorgehoben.
