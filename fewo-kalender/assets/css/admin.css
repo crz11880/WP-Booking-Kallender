@@ -1,0 +1,189 @@
+.fewo-admin-wrap .fewo-admin-card {
+    background: #fff;
+    border: 1px solid #dcdcde;
+    border-radius: 8px;
+    margin: 16px 0;
+    padding: 16px;
+}
+
+.fewo-actions-col {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.fewo-inline-form {
+    display: inline;
+}
+
+.fewo-month-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 12px;
+}
+
+.fewo-month-nav h2 {
+    margin: 0;
+}
+
+.fewo-legend {
+    display: flex;
+    gap: 8px;
+    margin: 12px 0 16px;
+    flex-wrap: wrap;
+}
+
+.fewo-design-previews {
+    display: flex;
+    gap: 8px;
+    margin-top: 10px;
+    flex-wrap: wrap;
+}
+
+.fewo-design-chip {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 110px;
+    border-radius: 999px;
+    padding: 6px 12px;
+    font-size: 12px;
+    font-weight: 600;
+    border: 1px solid #d0d7de;
+    background: #fff;
+    color: #1d2327;
+    box-shadow: inset 0 0 0 0 transparent;
+    transition: transform 0.12s ease, box-shadow 0.16s ease;
+}
+
+.fewo-design-chip.is-active {
+    transform: translateY(-1px);
+    box-shadow: inset 0 0 0 2px #1d2327, 0 4px 10px rgba(17, 24, 39, 0.12);
+}
+
+.fewo-design-modern {
+    background: linear-gradient(180deg, #f9fafb 0%, #eef2f7 100%);
+    border-color: #d1d5db;
+}
+
+.fewo-design-ocean {
+    background: linear-gradient(135deg, #e0f2fe 0%, #ccfbf1 100%);
+    border-color: #94a3b8;
+}
+
+.fewo-design-terracotta {
+    background: linear-gradient(135deg, #fff3e9 0%, #ffe7d0 100%);
+    border-color: #d6b08e;
+}
+
+.fewo-badge {
+    display: inline-block;
+    border-radius: 16px;
+    padding: 4px 10px;
+    font-weight: 600;
+    font-size: 12px;
+    color: #fff;
+}
+
+.fewo-badge.fewo-free {
+    background: #2e7d32;
+}
+
+.fewo-badge.fewo-booked {
+    background: #c62828;
+}
+
+.fewo-badge.fewo-changeover {
+    background: #ef6c00;
+}
+
+.fewo-month-grid {
+    border: 1px solid #dcdcde;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.fewo-weekdays,
+.fewo-days {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+}
+
+.fewo-weekday {
+    background: #f6f7f7;
+    border-bottom: 1px solid #dcdcde;
+    padding: 8px;
+    text-align: center;
+    font-weight: 600;
+}
+
+.fewo-day {
+    min-height: 68px;
+    border-right: 1px solid #f0f0f1;
+    border-bottom: 1px solid #f0f0f1;
+    padding: 6px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+button.fewo-day {
+    width: 100%;
+    cursor: pointer;
+    transition: transform 0.05s ease;
+}
+
+button.fewo-day:hover {
+    transform: translateY(-1px);
+}
+
+.fewo-day:nth-child(7n) {
+    border-right: none;
+}
+
+.fewo-empty {
+    background: #fafafa;
+}
+
+.fewo-day-number {
+    font-weight: 700;
+}
+
+.fewo-day-status-label {
+    font-size: 11px;
+    opacity: 0.95;
+    text-transform: lowercase;
+}
+
+.fewo-status-free {
+    background: #e8f5e9;
+    color: #1b5e20;
+}
+
+.fewo-status-booked {
+    background: #ffebee;
+    color: #8e0000;
+}
+
+.fewo-status-changeover {
+    background: #fff3e0;
+    color: #b34700;
+}
+
+.fewo-today {
+    box-shadow: inset 0 0 0 2px #1d2327;
+}
+
+@media (max-width: 782px) {
+    .fewo-month-nav {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .fewo-day {
+        min-height: 58px;
+    }
+}
