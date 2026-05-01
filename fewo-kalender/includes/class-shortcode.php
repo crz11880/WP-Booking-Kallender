@@ -15,6 +15,212 @@ class Fewo_Kalender_Shortcode
 
         add_action('wp_ajax_fewo_kalender_get_month', array($this, 'ajax_get_month'));
         add_action('wp_ajax_nopriv_fewo_kalender_get_month', array($this, 'ajax_get_month'));
+        add_action('wp_ajax_fewo_kalender_booking_ajax', array($this, 'handle_booking_ajax'));
+        add_action('wp_ajax_nopriv_fewo_kalender_booking_ajax', array($this, 'handle_booking_ajax'));
+        add_action('admin_post_fewo_kalender_booking_request', array($this, 'handle_booking_request'));
+        add_action('admin_post_nopriv_fewo_kalender_booking_request', array($this, 'handle_booking_request'));
+    }
+
+    public function handle_booking_ajax()
+    {
+        if (! check_ajax_referer('fewo_booking_request', 'fewo_booking_nonce', false)) {
+            wp_send_json_error(array('message' => 'Sicherheitsfehler. Bitte Seite neu laden.'));
+        }
+
+        // Honeypot: Bots fuellen dieses Feld aus, Menschen nicht
+        $honeypot = isset($_POST['fewo_hp']) ? (string) wp_unslash($_POST['fewo_hp']) : '';
+        if ('' !== $honeypot) {
+            wp_send_json_error(array('message' => 'Spam erkannt.'));
+        }
+
+        // Zeitcheck: Formular muss mindestens 3 Sekunden offen gewesen sein
+        $form_ts = isset($_POST['fewo_form_ts']) ? (int) wp_unslash($_POST['fewo_form_ts']) : 0;
+        if ($form_ts <= 0 || (time() - $form_ts) < 3) {
+            wp_send_json_error(array('message' => 'Bitte Formular nicht zu schnell absenden.'));
+        }
+
+        $calendar_id = isset($_POST['calendar_id']) ? absint($_POST['calendar_id']) : 0;
+        $first_name  = isset($_POST['first_name']) ? sanitize_text_field(wp_unslash($_POST['first_name'])) : '';
+        $last_name   = isset($_POST['last_name']) ? sanitize_text_field(wp_unslash($_POST['last_name'])) : '';
+        $email       = isset($_POST['email']) ? sanitize_email(wp_unslash($_POST['email'])) : '';
+        $from_date   = isset($_POST['from_date']) ? sanitize_text_field(wp_unslash($_POST['from_date'])) : '';
+        $to_date     = isset($_POST['to_date']) ? sanitize_text_field(wp_unslash($_POST['to_date'])) : '';
+        $message     = isset($_POST['message']) ? sanitize_textarea_field(wp_unslash($_POST['message'])) : '';
+
+        $errors = array();
+
+        if ('' === $first_name) {
+            $errors['first_name'] = 'Bitte Vornamen eingeben.';
+        }
+        if ('' === $last_name) {
+            $errors['last_name'] = 'Bitte Nachnamen eingeben.';
+        }
+        if (! is_email($email)) {
+            $errors['email'] = 'Bitte gueltige E-Mail-Adresse eingeben.';
+        }
+        if ('' === $from_date || ! Fewo_Kalender_DB::is_valid_date($from_date)) {
+            $errors['from_date'] = 'Bitte Anreisedatum im Kalender auswaehlen.';
+        }
+        if ('' === $to_date || ! Fewo_Kalender_DB::is_valid_date($to_date)) {
+            $errors['to_date'] = 'Bitte Abreisedatum im Kalender auswaehlen.';
+        }
+        if (empty($errors) && $from_date > $to_date) {
+            $errors['from_date'] = 'Anreisedatum muss vor Abreisedatum liegen.';
+        }
+
+        if (! empty($errors)) {
+            wp_send_json_error(array('errors' => $errors));
+        }
+
+        $calendar  = Fewo_Kalender_DB::get_calendar($calendar_id);
+        $recipient = $calendar ? Fewo_Kalender_DB::normalize_inquiry_email((string) $calendar->inquiry_email) : '';
+
+        if (! $calendar || empty($calendar->inquiry_enabled) || '' === $recipient) {
+            wp_send_json_error(array('message' => 'Buchungsanfrage fuer diesen Kalender nicht aktiviert.'));
+        }
+
+        $non_free_days = Fewo_Kalender_DB::get_statuses_for_range($calendar_id, $from_date, $to_date);
+        if (! empty($non_free_days)) {
+            wp_send_json_error(array('errors' => array(
+                'from_date' => 'Der gewaehlte Zeitraum enthaelt belegte Tage.',
+                'to_date'   => 'Bitte nur freie Tage auswaehlen.',
+            )));
+        }
+
+        $full_name = trim($first_name . ' ' . $last_name);
+        $subject   = sprintf(
+            'Buchungsanfrage fuer %s von %s bis %s von %s (%s)',
+            (string) $calendar->name,
+            $from_date,
+            $to_date,
+            $full_name,
+            $email
+        );
+
+        $body_lines = array(
+            'Kalender: ' . (string) $calendar->name,
+            'Von: ' . $from_date,
+            'Bis: ' . $to_date,
+            'Name: ' . $full_name,
+            'E-Mail: ' . $email,
+        );
+
+        if ('' !== $message) {
+            $body_lines[] = '';
+            $body_lines[] = 'Nachricht:';
+            $body_lines[] = $message;
+        }
+
+        $body    = implode("\n", $body_lines);
+        $headers = array('Reply-To: ' . $full_name . ' <' . $email . '>');
+        $sent    = wp_mail($recipient, $subject, $body, $headers);
+
+        if ($sent) {
+            wp_send_json_success(array('message' => 'Danke! Deine Buchungsanfrage wurde erfolgreich versendet.'));
+        } else {
+            wp_send_json_error(array('message' => 'E-Mail konnte nicht gesendet werden. Bitte spaeter erneut versuchen.'));
+        }
+    }
+
+    public function handle_booking_request()
+    {
+        check_admin_referer('fewo_booking_request', 'fewo_booking_nonce');
+
+        $calendar_id = isset($_POST['calendar_id']) ? absint($_POST['calendar_id']) : 0;
+        $first_name  = isset($_POST['first_name']) ? sanitize_text_field(wp_unslash($_POST['first_name'])) : '';
+        $last_name   = isset($_POST['last_name']) ? sanitize_text_field(wp_unslash($_POST['last_name'])) : '';
+        $email       = isset($_POST['email']) ? sanitize_email(wp_unslash($_POST['email'])) : '';
+        $from_date   = isset($_POST['from_date']) ? sanitize_text_field(wp_unslash($_POST['from_date'])) : '';
+        $to_date     = isset($_POST['to_date']) ? sanitize_text_field(wp_unslash($_POST['to_date'])) : '';
+        $message     = isset($_POST['message']) ? sanitize_textarea_field(wp_unslash($_POST['message'])) : '';
+
+        $redirect_url = wp_get_referer();
+        if (! $redirect_url) {
+            $redirect_url = home_url('/');
+        }
+
+        $calendar = Fewo_Kalender_DB::get_calendar($calendar_id);
+        $recipient = $calendar ? Fewo_Kalender_DB::normalize_inquiry_email((string) $calendar->inquiry_email) : '';
+
+        if (
+            ! $calendar ||
+            empty($calendar->inquiry_enabled) ||
+            '' === $recipient ||
+            '' === $first_name ||
+            '' === $last_name ||
+            ! is_email($email) ||
+            ! Fewo_Kalender_DB::is_valid_date($from_date) ||
+            ! Fewo_Kalender_DB::is_valid_date($to_date) ||
+            $from_date > $to_date
+        ) {
+            wp_safe_redirect(
+                add_query_arg(
+                    array(
+                        'fewoRequest'   => 'error',
+                        'fewoCalendar'  => $calendar_id,
+                    ),
+                    $redirect_url
+                )
+            );
+            exit;
+        }
+
+        $non_free_days = Fewo_Kalender_DB::get_statuses_for_range($calendar_id, $from_date, $to_date);
+        if (! empty($non_free_days)) {
+            wp_safe_redirect(
+                add_query_arg(
+                    array(
+                        'fewoRequest'   => 'error',
+                        'fewoCalendar'  => $calendar_id,
+                    ),
+                    $redirect_url
+                )
+            );
+            exit;
+        }
+
+        $full_name = trim($first_name . ' ' . $last_name);
+
+        $subject = sprintf(
+            'Buchungsanfrage fuer %s von %s bis %s von %s (%s)',
+            (string) $calendar->name,
+            $from_date,
+            $to_date,
+            $full_name,
+            $email
+        );
+
+        $body_lines = array(
+            'Neue Buchungsanfrage',
+            '',
+            'Kalender: ' . (string) $calendar->name,
+            'Von: ' . $from_date,
+            'Bis: ' . $to_date,
+            'Name: ' . $full_name,
+            'E-Mail: ' . $email,
+        );
+
+        if ('' !== $message) {
+            $body_lines[] = '';
+            $body_lines[] = 'Nachricht:';
+            $body_lines[] = $message;
+        }
+
+        $body = implode("\n", $body_lines);
+        $headers = array('Reply-To: ' . $full_name . ' <' . $email . '>');
+
+        $sent = wp_mail($recipient, $subject, $body, $headers);
+
+        wp_safe_redirect(
+            add_query_arg(
+                array(
+                    'fewoRequest'   => $sent ? 'success' : 'error',
+                    'fewoCalendar'  => $calendar_id,
+                ),
+                $redirect_url
+            )
+        );
+        exit;
     }
 
     /**
@@ -67,7 +273,13 @@ class Fewo_Kalender_Shortcode
                     'free'       => __('frei', 'fewo-kalender'),
                     'booked'     => __('belegt', 'fewo-kalender'),
                     'changeover' => __('Wechseltag', 'fewo-kalender'),
+                    'halfday'    => __('Halber Tag', 'fewo-kalender'),
+                    'halfday_reverse' => __('Halber Tag (invertiert)', 'fewo-kalender'),
                     'today'      => __('Heute', 'fewo-kalender'),
+                    'selectionHint' => __('Bitte zuerst Anreise und dann Abreise im Kalender anklicken.', 'fewo-kalender'),
+                    'freeOnlyHint' => __('Es koennen nur freie Tage markiert werden.', 'fewo-kalender'),
+                    'rangeBlockedHint' => __('Der gewaehlte Zeitraum enthaelt nicht freie Tage. Bitte nur freie Tage waehlen.', 'fewo-kalender'),
+                    'bookingAjaxAction' => 'fewo_kalender_booking_ajax',
                 ),
             )
         );
@@ -76,8 +288,19 @@ class Fewo_Kalender_Shortcode
         $design = '' !== $atts['design']
             ? Fewo_Kalender_DB::normalize_design($atts['design'])
             : Fewo_Kalender_DB::normalize_design(isset($calendar->design) ? $calendar->design : 'modern');
+        $request_message = '';
+        $request_status = isset($_GET['fewoRequest']) ? sanitize_key(wp_unslash($_GET['fewoRequest'])) : '';
+        $request_calendar = isset($_GET['fewoCalendar']) ? absint($_GET['fewoCalendar']) : 0;
 
-        return $this->render_calendar_wrapper($calendar, $month, $design);
+        if ($request_calendar === (int) $calendar->id) {
+            if ('success' === $request_status) {
+                $request_message = '<div class="fewo-request-feedback is-success">' . esc_html__('Danke! Deine Buchungsanfrage wurde erfolgreich versendet.', 'fewo-kalender') . '</div>';
+            } elseif ('error' === $request_status) {
+                $request_message = '<div class="fewo-request-feedback is-error">' . esc_html__('Buchungsanfrage konnte nicht gesendet werden. Bitte Eingaben pruefen und erneut versuchen.', 'fewo-kalender') . '</div>';
+            }
+        }
+
+        return $this->render_calendar_wrapper($calendar, $month, $design, $request_message);
     }
 
     public function ajax_get_month()
@@ -112,12 +335,15 @@ class Fewo_Kalender_Shortcode
      * @param object $calendar
      * @param string $month
      * @param string $design
+     * @param string $request_message
      * @return string
      */
-    private function render_calendar_wrapper($calendar, $month, $design)
+    private function render_calendar_wrapper($calendar, $month, $design, $request_message = '')
     {
         $container_id = 'fewo-calendar-' . absint($calendar->id) . '-' . wp_rand(100, 999);
         $theme_class  = 'fewo-theme-' . Fewo_Kalender_DB::normalize_design($design);
+        $inquiry_enabled = ! empty($calendar->inquiry_enabled);
+        $inquiry_email = Fewo_Kalender_DB::normalize_inquiry_email(isset($calendar->inquiry_email) ? (string) $calendar->inquiry_email : '');
 
         ob_start();
         include FEWO_KALENDER_PATH . 'templates/frontend-calendar.php';

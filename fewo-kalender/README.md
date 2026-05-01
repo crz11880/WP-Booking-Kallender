@@ -4,10 +4,17 @@ Ein einfaches und stabiles WordPress-Plugin fuer mehrere Ferienwohnungs-Belegung
 
 ## Funktionen
 - Beliebig viele Kalender im Backend anlegen
-- Tagesstatus: frei, belegt, Wechseltag
+- Tagesstatus: frei, belegt, Wechseltag, Halber Tag (belegt/frei), Halber Tag (frei/belegt)
 - Monatsansicht mit einfacher Klick-Bedienung im Admin
 - Frontend-Ausgabe per Shortcode
-- Pro Kalender waehbares Design (Modern, Ocean, Terracotta)
+- Optionales Buchungsanfrage-Formular mit Datumsauswahl (Von/Bis) direkt im Kalender
+- Mehrmonate-Buchung moeglich (z.B. 31.1 bis 10.2)
+- Nur freie Tage koennen ausgewaehlt werden
+- AJAX-Formularversand ohne Seitenneuladen, Feldfehler werden inline angezeigt
+- Spam-Schutz: Honeypot + Zeitcheck
+- SMTP-Konfiguration im Backend (Host, Port, TLS/SSL, Benutzername, Passwort, Absender)
+- Test-E-Mail Funktion im SMTP-Bereich
+- Pro Kalender waehlbares Design (Modern, Ocean, Terracotta)
 - Responsive Darstellung fuer Mobilgeraete
 
 ## Shortcode
@@ -25,6 +32,7 @@ Optional mit Design-Override:
 2. In WordPress unter Plugins > Installieren > Plugin hochladen die ZIP auswaehlen.
 3. Plugin aktivieren.
 4. Unter "Fewo Kalender" neue Kalender anlegen.
+5. SMTP unter "E-Mail Einstellungen" konfigurieren.
 
 ## Support
 Wenn dir dieses Plugin hilft, kannst du mich hier unterstuetzen:

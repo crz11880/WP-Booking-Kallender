@@ -77,6 +77,8 @@ class Fewo_Kalender_DB
             name VARCHAR(191) NOT NULL,
             description TEXT NULL,
             design VARCHAR(32) NOT NULL DEFAULT 'modern',
+            inquiry_enabled TINYINT(1) UNSIGNED NOT NULL DEFAULT 0,
+            inquiry_email VARCHAR(191) NULL,
             created_at DATETIME NOT NULL,
             PRIMARY KEY (id)
         ) {$charset_collate};";
@@ -99,6 +101,16 @@ class Fewo_Kalender_DB
         if (! $has_design_column) {
             $wpdb->query("ALTER TABLE {$calendars} ADD COLUMN design VARCHAR(32) NOT NULL DEFAULT 'modern' AFTER description"); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
         }
+
+        $has_inquiry_enabled_column = $wpdb->get_var("SHOW COLUMNS FROM {$calendars} LIKE 'inquiry_enabled'"); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+        if (! $has_inquiry_enabled_column) {
+            $wpdb->query("ALTER TABLE {$calendars} ADD COLUMN inquiry_enabled TINYINT(1) UNSIGNED NOT NULL DEFAULT 0 AFTER design"); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+        }
+
+        $has_inquiry_email_column = $wpdb->get_var("SHOW COLUMNS FROM {$calendars} LIKE 'inquiry_email'"); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+        if (! $has_inquiry_email_column) {
+            $wpdb->query("ALTER TABLE {$calendars} ADD COLUMN inquiry_email VARCHAR(191) NULL AFTER inquiry_enabled"); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+        }
     }
 
     /**
@@ -110,7 +122,7 @@ class Fewo_Kalender_DB
 
         $table = self::calendars_table();
 
-        return $wpdb->get_results("SELECT id, name, description, design FROM {$table} ORDER BY id ASC"); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+        return $wpdb->get_results("SELECT id, name, description, design, inquiry_enabled, inquiry_email FROM {$table} ORDER BY id ASC"); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
     }
 
     /**
@@ -123,21 +135,25 @@ class Fewo_Kalender_DB
 
         $table = self::calendars_table();
 
-        return $wpdb->get_row($wpdb->prepare("SELECT id, name, description, design FROM {$table} WHERE id = %d", $id));
+        return $wpdb->get_row($wpdb->prepare("SELECT id, name, description, design, inquiry_enabled, inquiry_email FROM {$table} WHERE id = %d", $id));
     }
 
     /**
      * @param string $name
      * @param string $description
      * @param string $design
+     * @param bool $inquiry_enabled
+     * @param string $inquiry_email
      * @return int|false
      */
-    public static function create_calendar($name, $description = '', $design = self::DEFAULT_DESIGN)
+    public static function create_calendar($name, $description = '', $design = self::DEFAULT_DESIGN, $inquiry_enabled = false, $inquiry_email = '')
     {
         global $wpdb;
 
         $table = self::calendars_table();
         $design = self::normalize_design($design);
+        $inquiry_enabled = $inquiry_enabled ? 1 : 0;
+        $inquiry_email = self::normalize_inquiry_email($inquiry_email);
 
         $inserted = $wpdb->insert(
             $table,
@@ -145,9 +161,11 @@ class Fewo_Kalender_DB
                 'name'        => $name,
                 'description' => $description,
                 'design'      => $design,
+                'inquiry_enabled' => $inquiry_enabled,
+                'inquiry_email' => $inquiry_email,
                 'created_at'  => current_time('mysql'),
             ),
-            array('%s', '%s', '%s', '%s')
+            array('%s', '%s', '%s', '%d', '%s', '%s')
         );
 
         if (! $inserted) {
@@ -162,14 +180,18 @@ class Fewo_Kalender_DB
      * @param string $name
      * @param string $description
      * @param string $design
+     * @param bool $inquiry_enabled
+     * @param string $inquiry_email
      * @return bool
      */
-    public static function update_calendar($id, $name, $description = '', $design = self::DEFAULT_DESIGN)
+    public static function update_calendar($id, $name, $description = '', $design = self::DEFAULT_DESIGN, $inquiry_enabled = false, $inquiry_email = '')
     {
         global $wpdb;
 
         $table = self::calendars_table();
         $design = self::normalize_design($design);
+        $inquiry_enabled = $inquiry_enabled ? 1 : 0;
+        $inquiry_email = self::normalize_inquiry_email($inquiry_email);
 
         $updated = $wpdb->update(
             $table,
@@ -177,9 +199,11 @@ class Fewo_Kalender_DB
                 'name'        => $name,
                 'description' => $description,
                 'design'      => $design,
+                'inquiry_enabled' => $inquiry_enabled,
+                'inquiry_email' => $inquiry_email,
             ),
             array('id' => $id),
-            array('%s', '%s', '%s'),
+            array('%s', '%s', '%s', '%d', '%s'),
             array('%d')
         );
 
@@ -316,7 +340,7 @@ class Fewo_Kalender_DB
     {
         $value = strtolower((string) $value);
 
-        if ('booked' === $value || 'changeover' === $value) {
+        if ('booked' === $value || 'changeover' === $value || 'halfday' === $value || 'halfday_reverse' === $value) {
             return $value;
         }
 
@@ -349,6 +373,17 @@ class Fewo_Kalender_DB
         }
 
         return self::DEFAULT_DESIGN;
+    }
+
+    /**
+     * @param string $email
+     * @return string
+     */
+    public static function normalize_inquiry_email($email)
+    {
+        $email = sanitize_email((string) $email);
+
+        return is_email($email) ? $email : '';
     }
 
     /**

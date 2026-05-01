@@ -50,6 +50,22 @@ $today         = current_time('Y-m-d');
                         </div>
                     </td>
                 </tr>
+                <tr>
+                    <th scope="row"><?php esc_html_e('Buchungsanfrage-Formular', 'fewo-kalender'); ?></th>
+                    <td>
+                        <label for="fewo_inquiry_enabled">
+                            <input type="checkbox" id="fewo_inquiry_enabled" name="inquiry_enabled" value="1" <?php checked(! empty($calendar->inquiry_enabled)); ?> />
+                            <?php esc_html_e('Formular im Frontend anzeigen', 'fewo-kalender'); ?>
+                        </label>
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row"><label for="fewo_inquiry_email"><?php esc_html_e('Empfaenger-E-Mail', 'fewo-kalender'); ?></label></th>
+                    <td>
+                        <input type="email" id="fewo_inquiry_email" name="inquiry_email" class="regular-text" value="<?php echo esc_attr(isset($calendar->inquiry_email) ? (string) $calendar->inquiry_email : ''); ?>" />
+                        <p class="description"><?php esc_html_e('An diese Adresse werden Buchungsanfragen gesendet.', 'fewo-kalender'); ?></p>
+                    </td>
+                </tr>
             </table>
 
             <?php submit_button(__('Kalenderdaten speichern', 'fewo-kalender')); ?>
@@ -67,6 +83,8 @@ $today         = current_time('Y-m-d');
             <span class="fewo-badge fewo-free"><?php esc_html_e('frei', 'fewo-kalender'); ?></span>
             <span class="fewo-badge fewo-booked"><?php esc_html_e('belegt', 'fewo-kalender'); ?></span>
             <span class="fewo-badge fewo-changeover"><?php esc_html_e('Wechseltag', 'fewo-kalender'); ?></span>
+            <span class="fewo-badge fewo-halfday"><?php esc_html_e('Halber Tag (belegt/frei)', 'fewo-kalender'); ?></span>
+            <span class="fewo-badge fewo-halfday-reverse"><?php esc_html_e('Halber Tag (frei/belegt)', 'fewo-kalender'); ?></span>
         </p>
 
         <form method="post" id="fewo-status-form">
@@ -100,7 +118,18 @@ $today         = current_time('Y-m-d');
 
                         echo '<button type="button" class="' . esc_attr(implode(' ', $classes)) . '" data-date="' . esc_attr($date) . '" data-status="' . esc_attr($status) . '">';
                         echo '<span class="fewo-day-number">' . esc_html((string) $day) . '</span>';
-                        echo '<span class="fewo-day-status-label">' . esc_html($status) . '</span>';
+                        $status_label = 'frei';
+                        if ('booked' === $status) {
+                            $status_label = 'belegt';
+                        } elseif ('changeover' === $status) {
+                            $status_label = 'wechseltag';
+                        } elseif ('halfday' === $status) {
+                            $status_label = 'halber tag (belegt/frei)';
+                        } elseif ('halfday_reverse' === $status) {
+                            $status_label = 'halber tag (frei/belegt)';
+                        }
+
+                        echo '<span class="fewo-day-status-label">' . esc_html($status_label) . '</span>';
                         echo '</button>';
                     }
                     ?>

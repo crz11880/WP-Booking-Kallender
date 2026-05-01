@@ -1,7 +1,7 @@
 (function () {
     'use strict';
 
-    var statusOrder = ['free', 'booked', 'changeover'];
+    var statusOrder = ['free', 'booked', 'changeover', 'halfday', 'halfday_reverse'];
     var form = document.getElementById('fewo-status-form');
 
     if (!form) {
@@ -14,7 +14,7 @@
     function updateButtonStyle(button, status) {
         button.dataset.status = status;
 
-        button.classList.remove('fewo-status-free', 'fewo-status-booked', 'fewo-status-changeover');
+        button.classList.remove('fewo-status-free', 'fewo-status-booked', 'fewo-status-changeover', 'fewo-status-halfday', 'fewo-status-halfday_reverse', 'fewo-status-halfday-reverse');
         button.classList.add('fewo-status-' + status);
 
         var label = button.querySelector('.fewo-day-status-label');
@@ -23,6 +23,10 @@
                 label.textContent = 'frei';
             } else if (status === 'booked') {
                 label.textContent = 'belegt';
+            } else if (status === 'halfday') {
+                label.textContent = 'halber tag (belegt/frei)';
+            } else if (status === 'halfday_reverse') {
+                label.textContent = 'halber tag (frei/belegt)';
             } else {
                 label.textContent = 'wechseltag';
             }

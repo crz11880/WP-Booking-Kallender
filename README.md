@@ -12,9 +12,10 @@ Ein einfaches WordPress-Plugin fuer mehrere Ferienwohnungs-Belegungskalender.
 
 == Description ==
 - Beliebig viele Kalender erstellen
-- Tagesstatus: frei, belegt, Wechseltag
+- Tagesstatus: frei, belegt, Wechseltag, Halber Tag (rot/gruen), Halber Tag (gruen/rot)
 - Backend Monatsansicht mit Klick-Bedienung
 - Frontend Anzeige per Shortcode
+- Optionales Buchungsanfrage-Formular mit Datumsauswahl (Von/Bis) und Mailversand
 - Design pro Kalender waehlbar (Modern, Ocean, Terracotta)
 - Responsive Layout, keine Buchungsfunktion
 
@@ -26,6 +27,12 @@ Ein einfaches WordPress-Plugin fuer mehrere Ferienwohnungs-Belegungskalender.
 5. Optionales Design im Shortcode: [fewo_kalender id="1" design="ocean"]
 
 == Changelog ==
+= 1.2.0 =
+* Optionales Buchungsanfrage-Formular im Frontend hinzugefuegt.
+* Datumsbereich (Von/Bis) wird per Klick im Kalender markiert und mitgesendet.
+* Versand der Anfrage per E-Mail an pro Kalender hinterlegte Empfaenger-Adresse.
+* Formular kann in "Kalender bearbeiten" pro Kalender ein- und ausgeschaltet werden.
+
 = 1.1.2 =
 * Live-Highlight der Design-Vorschau im Admin beim Wechsel der Design-Auswahl.
 
